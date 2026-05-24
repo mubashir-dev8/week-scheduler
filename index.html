@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Week Scheduler</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+  <!-- Light & Catchy Background Blobs -->
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+
+  <div class="app-container">
+    <header class="top-nav">
+      <div class="brand">
+        <div class="logo-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Student Week Scheduler</h1>
+          <p>Plan your perfect week with a colorful, focused timeline.</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button id="resetBtn" class="btn btn-secondary" type="button">Reset All</button>
+        <button id="exportBtn" class="btn btn-primary" type="button">Download PDF</button>
+      </div>
+    </header>
+
+    <main class="dashboard-layout">
+      <!-- Left Sidebar: Form -->
+      <aside class="sidebar">
+        <div class="glass-panel sticky-panel">
+          <div class="panel-header">
+            <h2>Plan Your Week</h2>
+            <span class="badge">Auto-Saved</span>
+          </div>
+
+          <form id="planForm" class="scheduler-form">
+
+            <div class="form-group full-width">
+              <label for="weekTitle">Plan Title</label>
+              <input id="weekTitle" type="text" placeholder="e.g., Spring Finals Prep" />
+            </div>
+
+            <!-- Date Selection -->
+            <div class="form-group full-width date-range-box">
+              <label for="startDate">Week Start Date</label>
+              <input type="date" id="startDate" required />
+              <div class="end-date-display" id="endDateDisplay">End Date: --</div>
+            </div>
+
+            <div class="form-group">
+              <label for="day">Select Day</label>
+              <select id="day" required>
+                <!-- Populated dynamically based on Start Date -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="type">Block Type</label>
+              <select id="type" required>
+                <option value="Study">Study</option>
+                <option value="Homework">Homework</option>
+                <option value="Revision">Revision</option>
+                <option value="Exam Prep">Exam Prep</option>
+                <option value="Project">Project</option>
+                <option value="Reading">Reading</option>
+                <option value="Break">Break</option>
+                <option value="Personal">Personal</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="title">Task / Focus</label>
+              <input id="title" type="text" placeholder="e.g., Math Chapter 5" required />
+            </div>
+
+            <!-- Custom Time Dropdowns -->
+            <div class="form-group full-width">
+              <label>Start Time</label>
+              <div class="time-picker-group">
+                <select id="startHour" required></select>
+                <span>:</span>
+                <select id="startMin" required>
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                </select>
+                <select id="startAmPm" required>
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label>End Time</label>
+              <div class="time-picker-group">
+                <select id="endHour" required></select>
+                <span>:</span>
+                <select id="endMin" required>
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                </select>
+                <select id="startAmPmOption" style="display:none;"></select> <!-- Fix fallback if needed -->
+                <select id="endAmPm" required>
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="priority">Priority</label>
+              <select id="priority" required>
+                <option value="High">High 🔥</option>
+                <option value="Medium" selected>Medium ⚡</option>
+                <option value="Low">Low ☕</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="color">Accent Color</label>
+              <div class="color-picker-wrapper">
+                <input id="color" type="color" value="#8b5cf6" />
+                <span id="colorHexCode" class="color-hex-display">#8B5CF6</span>
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="notes">Notes (Optional)</label>
+              <input id="notes" type="text" placeholder="e.g., Use Pomodoro technique" />
+            </div>
+
+            <div class="form-actions full-width">
+              <button id="saveBtn" class="btn btn-primary block-btn" type="submit">Add to Schedule</button>
+              <button id="cancelEditBtn" class="btn btn-secondary block-btn hidden" type="button">Cancel Edit</button>
+            </div>
+          </form>
+        </div>
+      </aside>
+
+      <!-- Right Area: Preview & Lists -->
+      <section class="main-content">
+        <div class="stats-grid" id="stats">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Calendar PDF Area -->
+        <div class="glass-panel" id="pdfExportWrapper">
+          <div id="pdfArea" class="calendar-wrapper">
+            <div class="calendar-header">
+              <div class="calendar-title-group">
+                <h3 id="printTitle">Student Week Scheduler</h3>
+                <p id="printSubtitle">Generated study plan</p>
+              </div>
+              <div class="week-badge" id="summaryText">No blocks yet</div>
+            </div>
+
+            <div class="calendar-scroll-container">
+              <div id="calendar" class="calendar-grid">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- List View Area -->
+        <div class="glass-panel list-panel">
+          <div class="panel-header">
+            <div>
+              <h3>All Scheduled Tasks</h3>
+              <p>Manage, edit, or remove items easily.</p>
+            </div>
+          </div>
+          <div id="blockList" class="block-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <footer
+    style="text-align:center; padding:18px; color:#6d7b93; font-size:14px; font-weight:500; background:rgba(255,255,255,0.6); backdrop-filter:blur(10px); border-top:1px solid rgba(0,0,0,0.05); margin-top:30px;">
+    <p style="margin:0;">© 2026 Developed By Mubashir. All rights reserved.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+
+</html>
